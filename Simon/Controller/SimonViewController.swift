@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import AVFoundation
 
 class SimonViewController: UIViewController {
+    
+    var player: AVAudioPlayer?
     
     private var currentPlayer = 0
     private var scores = [0,0]
@@ -22,6 +25,7 @@ class SimonViewController: UIViewController {
     @IBOutlet weak var actionButton: UIButton!
     @IBOutlet var playerLabels: [UILabel]!
     @IBOutlet weak var infoLabel: UILabel!
+    @IBOutlet weak var iconImage: UIImageView!
     
     
     override func viewDidLoad() {
@@ -40,8 +44,11 @@ class SimonViewController: UIViewController {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if gameEnded {
+            playMenuSound(soundFileName: "infoButtonSound")
             gameEnded = false
             createNewGame()
+            fadeOutInfoLabel()
+            fadeOutIconImage()
         }
     }
     
@@ -49,6 +56,7 @@ class SimonViewController: UIViewController {
         colorSequence.removeAll()
         
         actionButton.setTitle("Start Game", for: .normal)
+        infoLabel.text = "Press To Continue"
         actionButton.isEnabled = true
         disableColoredButtons()
         for button in coloredButtons {
@@ -92,6 +100,7 @@ class SimonViewController: UIViewController {
     
     func flash(button: CircularButton) {
         // Just creates the animation to flash a button
+        playMenuSound(soundFileName: "simonSound")
         UIView.animate(withDuration: 0.5) {
             button.alpha = 1.0
             button.alpha = 0.5
@@ -103,16 +112,23 @@ class SimonViewController: UIViewController {
     
     func endGame() {
         let message = currentPlayer == 0 ? "Player 2 Wins!" : "Player 1 Wins!"
+        switchPlayers()
         actionButton.setTitle(message, for: .normal)
+        infoLabel.text = "Press To Play Again"
+        fadeInInfoLabel()
         gameEnded = true
     }
     
     @IBAction func coloredButtonsPressed(_ sender: CircularButton) {
+
         // If user has pressed the correct button
         if sender.tag == colorsToTap.removeFirst() {
-            
+            playMenuSound(soundFileName: "simonSound")
         }
         else {
+            iconImage.image = UIImage(named: "xmark")
+            playMenuSound(soundFileName: "loseSound")
+            fadeInIconImage()
             disableColoredButtons()
             endGame()
             return
@@ -120,9 +136,13 @@ class SimonViewController: UIViewController {
         
         // User has pressed the buttons in the correct sequence
         if colorsToTap.isEmpty {
-            enableColoredButtons()
+            //enableColoredButtons()
+            playMenuSound(soundFileName: "correctSound")
+            iconImage.image = UIImage(named: "checkmark")
+            fadeInIconImage()
             scores[currentPlayer] += 1
             switchPlayers()
+            disableColoredButtons()
             actionButton.setTitle("Player \(currentPlayer + 1)'s Turn", for: .normal)
             
             fadeInInfoLabel()
@@ -151,7 +171,6 @@ class SimonViewController: UIViewController {
             
             //Once the label is completely invisible, set the text and fade it back in
             self.infoLabel.isHidden = false
-            //self.birdTypeLabel.text = "Bird Type: Swift"
             
             // Fade in
             UIView.animate(withDuration: 0.5, delay: 0.0, options: UIView.AnimationOptions.curveEaseIn, animations: {
@@ -168,7 +187,34 @@ class SimonViewController: UIViewController {
             
             //Once the label is completely invisible, set the text and fade it back in
             self.infoLabel.isHidden = true
-            //self.birdTypeLabel.text = "Bird Type: Swift"
+            
+        })
+    }
+    
+    func fadeInIconImage() {
+        UIView.animate(withDuration: 0.0, delay: 0.0, options: UIView.AnimationOptions.curveEaseOut, animations: {
+            self.iconImage.alpha = 0.0
+        }, completion: {
+            (finished: Bool) -> Void in
+            
+            //Once the label is completely invisible, set the text and fade it back in
+            self.iconImage.isHidden = false
+            
+            // Fade in
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+                self.iconImage.alpha = 1.0
+            }, completion: nil)
+        })
+    }
+    
+    func fadeOutIconImage() {
+        UIView.animate(withDuration: 0.25, delay: 0.0, options: UIView.AnimationOptions.curveEaseOut, animations: {
+            self.iconImage.alpha = 0.0
+        }, completion: {
+            (finished: Bool) -> Void in
+            
+            //Once the label is completely invisible, set the text and fade it back in
+            self.iconImage.isHidden = true
             
         })
     }
@@ -176,7 +222,9 @@ class SimonViewController: UIViewController {
     @IBAction func actionButtonPressed(_ sender: UIButton) {
         // Disable all user interaction while game loads
         view.isUserInteractionEnabled = false
+        playMenuSound(soundFileName: "infoButtonSound")
         fadeOutInfoLabel()
+        fadeOutIconImage()
         sequenceIndex = 0
         actionButton.setTitle("Follow Simon!", for: .normal)
         actionButton.isEnabled = false
@@ -188,6 +236,22 @@ class SimonViewController: UIViewController {
         }
     }
     
-    
+    func playMenuSound(soundFileName: String) {
+        guard let url = Bundle.main.url(forResource: soundFileName, withExtension: "mp3") else { return }
+
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+
+            player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            
+            guard let player = player else { return }
+
+            player.play()
+
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
     
 }
