@@ -37,6 +37,13 @@ class SimonViewController: UIViewController {
         createNewGame()
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if gameEnded {
+            gameEnded = false
+            createNewGame()
+        }
+    }
+    
     func createNewGame() {
         colorSequence.removeAll()
         
@@ -46,6 +53,27 @@ class SimonViewController: UIViewController {
         for button in coloredButtons {
             button.alpha = 0.5
         }
+        
+        currentPlayer = 0
+        scores = [0,0]
+        playerLabels[currentPlayer].alpha = 1.0
+        playerLabels[1].alpha = 0.10
+        updateScoreLabels()
+    }
+    
+    func updateScoreLabels() {
+        for (index,label) in scoreLabels.enumerated() {
+            label.text = "\(scores[index])"
+        }
+    }
+    
+    func switchPlayers() {
+        playerLabels[currentPlayer].alpha = 0.10
+        //playerLabels[currentPlayer].backgroundColor = UIColor.red
+        // Switch the current player
+        currentPlayer = currentPlayer == 0 ? 1 : 0
+        playerLabels[currentPlayer].alpha = 1.0
+        //playerLabels[currentPlayer].backgroundColor = UIColor.clear
     }
     
     func addNewColor() {
@@ -78,6 +106,12 @@ class SimonViewController: UIViewController {
 
     }
     
+    func endGame() {
+        let message = currentPlayer == 0 ? "Player 2 Wins!" : "Player 1 Wins!"
+        actionButton.setTitle(message, for: .normal)
+        gameEnded = true
+    }
+    
     @IBAction func coloredButtonsPressed(_ sender: CircularButton) {
         // If user has pressed the correct button
         if sender.tag == colorsToTap.removeFirst() {
@@ -85,12 +119,16 @@ class SimonViewController: UIViewController {
         }
         else {
             disableColoredButtons()
+            endGame()
             return
         }
         
         // User has pressed the buttons in the correct sequence
         if colorsToTap.isEmpty {
             enableColoredButtons()
+            scores[currentPlayer] += 1
+            updateScoreLabels()
+            switchPlayers()
             actionButton.setTitle("Continue", for: .normal)
             actionButton.isEnabled = true
         }
