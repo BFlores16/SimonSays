@@ -12,6 +12,7 @@
 		A5AFF4822582F4C70046BECB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5AFF4802582F4C70046BECB /* Main.storyboard */; };
 		A5AFF4842582F4CA0046BECB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A5AFF4832582F4CA0046BECB /* Assets.xcassets */; };
 		A5AFF4872582F4CA0046BECB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5AFF4852582F4CA0046BECB /* LaunchScreen.storyboard */; };
+		A5AFF4952582F5F40046BECB /* CircularButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AFF4942582F5F40046BECB /* CircularButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		A5AFF4832582F4CA0046BECB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A5AFF4862582F4CA0046BECB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A5AFF4882582F4CA0046BECB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A5AFF4942582F5F40046BECB /* CircularButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 		A5AFF48F2582F5550046BECB /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				A5AFF4942582F5F40046BECB /* CircularButton.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -168,6 +171,7 @@
 			files = (
 				A5AFF47B2582F4C70046BECB /* AppDelegate.swift in Sources */,
 				A5AFF47D2582F4C70046BECB /* SceneDelegate.swift in Sources */,
+				A5AFF4952582F5F40046BECB /* CircularButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
