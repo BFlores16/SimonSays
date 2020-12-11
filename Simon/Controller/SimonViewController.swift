@@ -8,7 +8,7 @@
 import UIKit
 
 class SimonViewController: UIViewController {
-
+    
     private var currentPlayer = 0
     private var scores = [0,0]
     
@@ -21,19 +21,20 @@ class SimonViewController: UIViewController {
     @IBOutlet var coloredButtons: [CircularButton]!
     @IBOutlet weak var actionButton: UIButton!
     @IBOutlet var playerLabels: [UILabel]!
-    @IBOutlet var scoreLabels: [UILabel]!
+    @IBOutlet weak var infoLabel: UILabel!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        actionButton.titleLabel?.lineBreakMode = NSLineBreakMode.byWordWrapping
+        
         coloredButtons = coloredButtons.sorted() {
             $0.tag < $1.tag
         }
         playerLabels = playerLabels.sorted() {
             $0.tag < $1.tag
         }
-        scoreLabels = scoreLabels.sorted() {
-            $0.tag < $1.tag
-        }
+        
         createNewGame()
     }
     
@@ -58,14 +59,8 @@ class SimonViewController: UIViewController {
         scores = [0,0]
         playerLabels[currentPlayer].alpha = 1.0
         playerLabels[1].alpha = 0.10
-        updateScoreLabels()
     }
     
-    func updateScoreLabels() {
-        for (index,label) in scoreLabels.enumerated() {
-            label.text = "\(scores[index])"
-        }
-    }
     
     func switchPlayers() {
         playerLabels[currentPlayer].alpha = 0.10
@@ -90,7 +85,7 @@ class SimonViewController: UIViewController {
         else {
             colorsToTap = colorSequence
             view.isUserInteractionEnabled = true
-            actionButton.setTitle("Tap the circles", for: .normal)
+            actionButton.setTitle("Player \(currentPlayer + 1) Go!", for: .normal)
             enableColoredButtons()
         }
     }
@@ -103,7 +98,7 @@ class SimonViewController: UIViewController {
         } completion: { (Bool) in
             self.playSequence()
         }
-
+        
     }
     
     func endGame() {
@@ -127,9 +122,11 @@ class SimonViewController: UIViewController {
         if colorsToTap.isEmpty {
             enableColoredButtons()
             scores[currentPlayer] += 1
-            updateScoreLabels()
             switchPlayers()
-            actionButton.setTitle("Continue", for: .normal)
+            actionButton.setTitle("Player \(currentPlayer + 1)'s Turn", for: .normal)
+            
+            fadeInInfoLabel()
+            
             actionButton.isEnabled = true
         }
     }
@@ -146,10 +143,40 @@ class SimonViewController: UIViewController {
         }
     }
     
+    func fadeInInfoLabel() {
+        UIView.animate(withDuration: 0.0, delay: 0.0, options: UIView.AnimationOptions.curveEaseOut, animations: {
+            self.infoLabel.alpha = 0.0
+        }, completion: {
+            (finished: Bool) -> Void in
+            
+            //Once the label is completely invisible, set the text and fade it back in
+            self.infoLabel.isHidden = false
+            //self.birdTypeLabel.text = "Bird Type: Swift"
+            
+            // Fade in
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: UIView.AnimationOptions.curveEaseIn, animations: {
+                self.infoLabel.alpha = 1.0
+            }, completion: nil)
+        })
+    }
+    
+    func fadeOutInfoLabel() {
+        UIView.animate(withDuration: 0.25, delay: 0.0, options: UIView.AnimationOptions.curveEaseOut, animations: {
+            self.infoLabel.alpha = 0.0
+        }, completion: {
+            (finished: Bool) -> Void in
+            
+            //Once the label is completely invisible, set the text and fade it back in
+            self.infoLabel.isHidden = true
+            //self.birdTypeLabel.text = "Bird Type: Swift"
+            
+        })
+    }
+    
     @IBAction func actionButtonPressed(_ sender: UIButton) {
         // Disable all user interaction while game loads
         view.isUserInteractionEnabled = false
-        
+        fadeOutInfoLabel()
         sequenceIndex = 0
         actionButton.setTitle("Follow Simon!", for: .normal)
         actionButton.isEnabled = false
@@ -162,5 +189,5 @@ class SimonViewController: UIViewController {
     }
     
     
-
+    
 }
