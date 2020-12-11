@@ -16,6 +16,8 @@ class SimonViewController: UIViewController {
     private var colorSequence = [Int]()
     private var colorsToTap = [Int]()
     
+    private var gameEnded = false
+    
     @IBOutlet var coloredButtons: [CircularButton]!
     @IBOutlet weak var actionButton: UIButton!
     @IBOutlet var playerLabels: [UILabel]!
@@ -40,9 +42,9 @@ class SimonViewController: UIViewController {
         
         actionButton.setTitle("Start Game", for: .normal)
         actionButton.isEnabled = true
+        disableColoredButtons()
         for button in coloredButtons {
             button.alpha = 0.5
-            button.isEnabled = false
         }
     }
     
@@ -61,9 +63,7 @@ class SimonViewController: UIViewController {
             colorsToTap = colorSequence
             view.isUserInteractionEnabled = true
             actionButton.setTitle("Tap the circles", for: .normal)
-            for button in coloredButtons {
-                button.isEnabled = true
-            }
+            enableColoredButtons()
         }
     }
     
@@ -79,14 +79,41 @@ class SimonViewController: UIViewController {
     }
     
     @IBAction func coloredButtonsPressed(_ sender: CircularButton) {
-        print("Button \(sender.tag) tapped")
+        // If user has pressed the correct button
+        if sender.tag == colorsToTap.removeFirst() {
+            
+        }
+        else {
+            disableColoredButtons()
+            return
+        }
+        
+        // User has pressed the buttons in the correct sequence
+        if colorsToTap.isEmpty {
+            enableColoredButtons()
+            actionButton.setTitle("Continue", for: .normal)
+            actionButton.isEnabled = true
+        }
     }
+    
+    private func enableColoredButtons() {
+        for button in coloredButtons {
+            button.isEnabled = true
+        }
+    }
+    
+    private func disableColoredButtons() {
+        for button in coloredButtons {
+            button.isEnabled = false
+        }
+    }
+    
     @IBAction func actionButtonPressed(_ sender: UIButton) {
         // Disable all user interaction while game loads
         view.isUserInteractionEnabled = false
         
         sequenceIndex = 0
-        actionButton.setTitle("Memorize", for: .normal)
+        actionButton.setTitle("Follow Simon!", for: .normal)
         actionButton.isEnabled = false
         
         addNewColor()
