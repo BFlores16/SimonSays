@@ -8,6 +8,18 @@
 import UIKit
 
 class CircularButton: UIButton {
+    
+    // Simulate that the user has pressed a button
+    override var isHighlighted: Bool {
+        didSet {
+            if isHighlighted {
+                alpha = 1.0
+            }
+            else {
+                alpha = 0.5
+            }
+        }
+    }
 
     override func awakeFromNib() {
         // Make the buttons circular. You could also use height but
@@ -16,5 +28,7 @@ class CircularButton: UIButton {
         // No sublayers are drawn behind the button to ensure it is circular
         layer.masksToBounds = true
     }
+    
+
 
 }
